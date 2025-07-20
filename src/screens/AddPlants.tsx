@@ -1,19 +1,23 @@
 import { TextInput } from "@react-native-material/core";
-import { KeyboardAvoidingView, ScrollView, StyleSheet, Platform } from "react-native";
+import { KeyboardAvoidingView, ScrollView, StyleSheet, Platform, Text } from "react-native";
 import LightSelector from "../components/LightSelector";
-import { useState } from "react";
-import { LightRequirement } from "../enums/LightRequirement";
-import BloomRangePicker from "../components/BloomRangePicker";
 import ImagePicker from "../components/ImagePicker";
+import FlexRangeSlider from "@/components/RangeSlider";
+import { usePlantFormStore } from "@/store/usePlantFormStore";
+import { monthRange } from "@/consts/MonthRange";
+
+
 
 export default function AddPlants() {
-    const [image, setImage] = useState<string | null>(null);
-    const [latName, setLatName] = useState<string>('');
-    const [deName, setDeName] = useState<string>('');
-    const [light, setLight] = useState<LightRequirement>(LightRequirement.FULL_SUN);
-    const [startMonth, setStartMonth] = useState<number>(0);
-    const [endMonth, setEndMonth] = useState<number>(0);
-    const [comment, setComment] = useState('');
+    const {
+        latName, setLatName,
+        deName, setDeName,
+        comment, setComment,
+        image, setImage,
+        light, setLight,
+        selectedMonthRange, setSelectedMonthRange
+    } = usePlantFormStore();
+
 
     return (
         <KeyboardAvoidingView
@@ -29,12 +33,15 @@ export default function AddPlants() {
                 <TextInput label="Lateinischer Name" value={latName} onChangeText={setLatName} />
                 <TextInput label="Deutscher Name" value={deName} onChangeText={setDeName} />
                 <LightSelector value={light} onChange={setLight} />
-                <BloomRangePicker
-                    startMonth={startMonth}
-                    endMonth={endMonth}
-                    onChangeStart={setStartMonth}
-                    onChangeEnd={setEndMonth}
+                <Text >
+                    Ausgewählter Bereich: {selectedMonthRange.start ?? 'N/A'} bis {selectedMonthRange.end ?? 'N/A'}
+                </Text>
+                <FlexRangeSlider
+                    values={monthRange}
+                    onRangeChange={setSelectedMonthRange}
                 />
+
+
                 <TextInput
                     label="Kommentare / Notizen"
                     value={comment}
