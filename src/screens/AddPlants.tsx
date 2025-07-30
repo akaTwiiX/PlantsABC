@@ -1,22 +1,32 @@
 import { TextInput } from "@react-native-material/core";
-import { KeyboardAvoidingView, ScrollView, StyleSheet, Platform, Text } from "react-native";
+import { KeyboardAvoidingView, ScrollView, StyleSheet, Platform } from "react-native";
 import LightSelector from "../components/LightSelector";
 import ImagePicker from "../components/ImagePicker";
-import FlexRangeSlider from "@/components/RangeSlider";
 import { usePlantFormStore } from "@/store/usePlantFormStore";
-import { monthRange } from "@/consts/MonthRange";
+import BloomTime from "@/components/BloomTime";
+import PlantHeight from "@/components/PlantHeight";
+import SoilPicker from "@/components/SoilPicker";
+import { useEffect } from "react";
 
 
 
 export default function AddPlants() {
     const {
-        latName, setLatName,
-        deName, setDeName,
-        comment, setComment,
-        image, setImage,
-        light, setLight,
-        selectedMonthRange, setSelectedMonthRange
+        nameLatin,
+        nameGerman,
+        light,
+        notice,
+        setValue
     } = usePlantFormStore();
+
+    useEffect(() => {
+        console.log('läuft...');
+
+        return () => {
+            console.log('aufgeräumt!');
+        };
+    }, []);
+
 
 
     return (
@@ -29,23 +39,20 @@ export default function AddPlants() {
                 keyboardShouldPersistTaps="handled"
                 contentContainerStyle={styles.scrollContent}
             >
-                <ImagePicker value={image} onChange={setImage} />
-                <TextInput label="Lateinischer Name" value={latName} onChangeText={setLatName} />
-                <TextInput label="Deutscher Name" value={deName} onChangeText={setDeName} />
-                <LightSelector value={light} onChange={setLight} />
-                <Text >
-                    Ausgewählter Bereich: {selectedMonthRange.start ?? 'N/A'} bis {selectedMonthRange.end ?? 'N/A'}
-                </Text>
-                <FlexRangeSlider
-                    values={monthRange}
-                    onRangeChange={setSelectedMonthRange}
-                />
+                <ImagePicker />
+                <TextInput label="Lateinischer Name" value={nameLatin} onChangeText={(text) => setValue('nameLatin', text)} />
+                <TextInput label="Deutscher Name" value={nameGerman} onChangeText={(text) => setValue('nameGerman', text)} />
+                <LightSelector value={light} onChange={(val) => setValue('light', val)} />
+                <BloomTime />
+                <PlantHeight />
+                <SoilPicker />
+
 
 
                 <TextInput
                     label="Kommentare / Notizen"
-                    value={comment}
-                    onChangeText={setComment}
+                    value={notice}
+                    onChangeText={(text) => setValue('notice', text)}
                     multiline
                     numberOfLines={8}
                     style={[styles.input]}

@@ -1,28 +1,22 @@
 import { Image, StyleSheet, Text, TouchableOpacity } from 'react-native'
 import React from 'react'
 import { openImagePicker } from '@/utils/ImageService';
+import { usePlantFormStore } from '@/store/usePlantFormStore';
 
 
 
+export default function ImagePicker() {
 
-
-type Props = {
-    value: string | null;
-    onChange: (value: string) => void;
-};
-
-export default function ImagePicker({ value, onChange }: Props) {
-
-
+    const { imageUrl, setValue } = usePlantFormStore();
     return (
 
         <TouchableOpacity
-            onPress={() => openImagePicker(onChange)}
+            onPress={() => openImagePicker((uri) => setValue('imageUrl', uri))}
             style={styles.button}
         >
-            {value ? (
+            {imageUrl ? (
                 <Image
-                    source={{ uri: value }}
+                    source={{ uri: imageUrl }}
                     style={styles.image}
                     resizeMode="cover"
                 />

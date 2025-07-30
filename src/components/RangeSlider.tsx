@@ -4,23 +4,34 @@ import { View, Text, StyleSheet } from 'react-native';
 import RangeSlider from 'rn-range-slider';
 
 interface FlexRangeSliderProps<T> {
-    values: T[];
+    range: T[];
     onRangeChange: (value: RangeSliderType) => void;
+    value: RangeSliderType;
 }
 
-export default function FlexRangeSlider<T extends string>({
-    values,
+function getRangeIndex<T>(range: T[], value: string | number | null, fallback: number = 0): number {
+    const index = range.indexOf(value as T);
+    return index >= 0 ? index : fallback;
+}
+
+
+export default function FlexRangeSlider<T extends string | null | number>({
+    range,
     onRangeChange,
+    value
 }: FlexRangeSliderProps<T>) {
 
-    const handleValueChange = useCallback(
-        (low: number, high: number) => {
-            if (values.length > 0) {
-                onRangeChange({ start: values[low], end: values[high] });
-            }
-        },
-        [onRangeChange, values]
-    );
+
+    const handleValueChange = useCallback((low: number, high: number) => {
+        const start = range[low];
+        const end = range[high];
+
+
+        if (value.start !== start || value.end !== end) {
+            onRangeChange({ start, end });
+        }
+    }, [range, value, onRangeChange]);
+
 
     const renderThumb = useCallback(() => <View style={styles.thumb} />, []);
     const renderRail = useCallback(() => <View style={styles.rail} />, []);
@@ -29,24 +40,26 @@ export default function FlexRangeSlider<T extends string>({
         []
     );
     const renderLabel = useCallback(
-        (value: number) => (
+        (val: number) => (
             <View style={styles.labelContainer}>
                 <Text style={styles.labelText}>
-                    {values[Math.round(value)] ?? ''}
+                    {range[Math.round(val)] ?? ''}
                 </Text>
             </View>
         ),
-        [values]
+        [range]
     );
     const renderNotch = useCallback(() => <View style={styles.notch} />, []);
 
     return (
         <View style={styles.container}>
-            {values.length > 0 ? (
+            {range.length > 0 ? (
                 <RangeSlider
                     style={styles.slider}
                     min={0}
-                    max={values.length - 1}
+                    max={range.length - 1}
+                    low={getRangeIndex(range, value.start)}
+                    high={getRangeIndex(range, value.end, range.length - 1)}
                     step={1}
                     renderThumb={renderThumb}
                     renderRail={renderRail}
@@ -67,6 +80,7 @@ const styles = StyleSheet.create({
         width: '100%',
         marginBottom: 30,
         alignItems: 'center',
+        paddingHorizontal: 30
     },
     slider: {
         width: '100%'
